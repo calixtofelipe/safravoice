@@ -12,10 +12,12 @@ def get_token():
     url = "https://idcs-902a944ff6854c5fbe94750e48d66be5.identity.oraclecloud.com/oauth2/v1/token"
 
     to_token = client_id + ':' + secret
-    payload = "grant_type=client_credentials&scope=urn:opc:resource:consumer::all"
     encoded = base64.b64encode(to_token.encode("ascii"))
+    auth = 'Basic ' + encoded.decode()
+    payload = "grant_type=client_credentials&scope=urn:opc:resource:consumer::all"
+
     headers = {
-        'authorization': 'Basic ' + encoded.decode(),
+        'authorization': auth,
         'content-type': 'application/x-www-form-urlencoded'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
