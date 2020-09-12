@@ -119,19 +119,18 @@ def get_extrato(intencao, tipoGasto):
     if (response.status_code >= 200 and response.status_code <= 299):
         #retorno = response.json()
         extrato = response.json()
-        retorno['statuscode'] = 200
         if (intencao == 'extrato_completo'):
-            retorno['response'] = 'extrato_completo'
+            retorno['intention'] = 'extrato_completo'
             return retorno
         elif (intencao == 'tipo_gasto'):
             for transaction in extrato['data']['transaction']:
                 informacao = transaction['transactionInformation']
                 if (tipoGasto.lower() in informacao.lower()):
-                    retorno['response'] = 'positivo'
+                    retorno['intention'] = 'positivo'
                 else:
-                    retorno['response'] = 'negativo'
+                    retorno['intention'] = 'negativo'
 
     else:
-        retorno['statuscode'] = response.status_code
+        retorno['intention'] = 'error'
 
     return retorno

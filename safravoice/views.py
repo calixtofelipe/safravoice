@@ -30,11 +30,12 @@ def process_voice(request):
         response = dict()
         intention = audio2intention(request.data['nome_arquivo'],
                                     request.data['encoded_audio'])
-        intention = 'efetuar_transferencia'
+        intention = 'extrato_completo'
         response['intention'] = intention
 
         if (intention in ['extrato_completo', 'tipo_gasto']):
-            response['intention'] = get_extrato(intention, "carro")
+            retorno_extrato = get_extrato(intention, "carro")
+            response = get_extrato(intention, "carro")
 
         serializer = IntentionSerializer(data=response)
         if serializer.is_valid():
