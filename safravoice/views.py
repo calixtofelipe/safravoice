@@ -8,7 +8,7 @@ from safravoice.models import ReqBuilder
 from safravoice.serializers import ReqBuilderSerializer, SendTransactionSerializer, IntentionSerializer
 from safravoice.api_safra import send_transaction_safra, get_extrato
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -21,6 +21,7 @@ from safravoice.watson.api_watson import decodeAudio, voz2Texto, texto2intensao
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 def process_voice(request):
     """
         Esse endpoint processa a voz do usuário o e nome do arquivo para retornar qual a intenção do usuário.
@@ -46,6 +47,7 @@ def process_voice(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 def send_transaction(request):
     """
         Esse endpoint recebe o numero de telefone consulta no banco de dados

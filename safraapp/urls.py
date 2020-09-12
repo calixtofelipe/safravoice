@@ -19,6 +19,7 @@ from safravoice import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', admin.site.urls),
     path('api/',
          include(('safravoice.urls', 'safravoice'), namespace='safravoice')),
 ]
