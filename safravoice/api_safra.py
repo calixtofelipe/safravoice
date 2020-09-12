@@ -14,22 +14,6 @@ from safravoice.models import ReqBuilder, ExtratoModel
 import requests
 
 
-def get_token2():
-    """
-        Responsável por obter o token de validação
-    """
-    queryset = ReqBuilder.objects.filter(description='reqToken').get()
-    client_id = queryset.client_id
-    secret = queryset.secret
-    url = queryset.url
-    header = {"Content-type": "application/json"}
-    to_token = client_id + ':' + secret
-    encoded = base64.b64encode(bytes(to_token, 'uft-8'))
-    print(encoded, encoded.encode('utf-8'))
-    response = requests.post(url, headers=header, json=encoded.encode('utf-8'))
-    print(response)
-
-
 def get_token():
     """
         Responsável por obter o token de autenticação na api do safra
@@ -105,7 +89,49 @@ def send_transaction_safra(celular):
         retorno['statuscode'] = 200
 
     else:
-        print('entrou aqui no erro', response.status_code)
+        retorno['statuscode'] = response.status_code
+
+    return retorno
+
+
+def get_extrato(intencao, tipoGasto):
+    """
+        Responsável por realizar a consulta de extrato bancário
+    """
+    response_token = get_token()
+
+    retorno = dict()
+    if (response_token['statuscode'] == 200):
+        token = response_token['access_token']
+    else:
+        return retorno['statuscode'] == 405
+
+    queryset = ReqBuilder.objects.filter(description='consultaExtrato').get()
+    url = queryset.url
+
+    auth = 'Bearer ' + token
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth,
+    }
+    response = requests.request("GET", url, headers=headers)
+    retorno = dict()
+    if (response.status_code >= 200 and response.status_code <= 299):
+        #retorno = response.json()
+        extrato = response.json()
+        retorno['statuscode'] = 200
+        if (intencao == 'extrato_completo'):
+            retorno['response'] = 'extrato_completo'
+            return retorno
+        elif (intencao == 'tipo_gasto'):
+            for transaction in extrato['data']['transaction']:
+                informacao = transaction['transactionInformation']
+                if (tipoGasto.lower() in informacao.lower()):
+                    retorno['response'] = 'positivo'
+                else:
+                    retorno['response'] = 'negativo'
+
+    else:
         retorno['statuscode'] = response.status_code
 
     return retorno

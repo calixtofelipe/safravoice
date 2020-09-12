@@ -13,6 +13,10 @@ class SendTransactionSerializer(serializers.Serializer):
     status = serializers.CharField(max_length=300)
 
 
+class IntentionSerializer(serializers.Serializer):
+    intention = serializers.CharField(max_length=300)
+
+
 class UserSerializer(serializers.Serializer):
     email = serializers.EmailField()
     username = serializers.CharField(max_length=100)

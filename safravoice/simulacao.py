@@ -58,11 +58,50 @@ def send_transaction(token):
     response = requests.request("POST", url, headers=headers, data=json_object)
     if (response.status_code >= 200 and response.status_code <= 299):
         retorno = response.json()
-        print(retorno)
     else:
-        print(response.status_code)
+        retorno['statuscode'] = 404
 
 
-retorno_token = get_token()
-print('token: ', retorno_token['access_token'])
-send_transaction(retorno_token['access_token'])
+def get_extrato(intencao, tipoGasto):
+    """
+        Responsável por realizar a consulta de extrato bancário
+    """
+    response_token = get_token()
+
+    retorno = dict()
+    if (response_token['statuscode'] == 200):
+        token = response_token['access_token']
+    else:
+        return retorno['statuscode'] == 405
+
+    url = 'https://af3tqle6wgdocsdirzlfrq7w5m.apigateway.sa-saopaulo-1.oci.customer-oci.com/fiap-sandbox/open-banking/v1/accounts/00711234522/transactions'
+
+    auth = 'Bearer ' + token
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': auth,
+    }
+    response = requests.request("GET", url, headers=headers)
+    retorno = dict()
+    if (response.status_code >= 200 and response.status_code <= 299):
+        #retorno = response.json()
+        extrato = response.json()
+        retorno['statuscode'] = 200
+        if (intencao == 'extrato_completo'):
+            retorno['response'] = 'extrato_completo'
+            return retorno
+        elif (intencao == 'tipo_gasto'):
+            for transaction in extrato['data']['transaction']:
+                informacao = transaction['transactionInformation']
+                if (tipoGasto.lower() in informacao.lower()):
+                    retorno['response'] = 'positivo'
+                else:
+                    retorno['response'] = 'negativo'
+
+    else:
+        retorno['statuscode'] = response.status_code
+
+    return retorno
+
+
+print(get_extrato('tipo_gasto', 'academia'))
