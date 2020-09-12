@@ -22,10 +22,6 @@ SafraVoice utiliza integrações com duas API:
 ##### Enviar audio para ser processado
 `POST [host]/api/process_voice`
 
-##### Solicitar transferência
-`POST [host]/api/send_transaction`
-
-
 
 ### Tech
 

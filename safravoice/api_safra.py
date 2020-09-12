@@ -5,13 +5,14 @@ import base64
 import requests
 import json
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'safraapp.settings')
-print(os.environ.get('DJANGO_SETTINGS_MODULE'))
-import django
-django.setup()
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'safraapp.settings')
+#print(os.environ.get('DJANGO_SETTINGS_MODULE'))
+#import django
+#django.setup()
 
-from safravoice.models import ReqBuilder, ExtratoModel
+from safravoice.models import ReqBuilder
 import requests
+import re
 
 
 def get_token():
@@ -80,11 +81,10 @@ def send_transaction_safra(celular):
         'Content-Type': 'application/json',
         'Authorization': auth,
     }
-    print(token)
+
     response = requests.request("POST", url, headers=headers, data=json_object)
     retorno = dict()
     if (response.status_code >= 200 and response.status_code <= 299):
-        print(response.status_code)
         retorno = response.json()
         retorno['statuscode'] = 200
 
@@ -94,7 +94,7 @@ def send_transaction_safra(celular):
     return retorno
 
 
-def get_extrato(intencao, tipoGasto):
+def get_extrato(script):
     """
         Responsável por realizar a consulta de extrato bancário
     """
@@ -119,18 +119,65 @@ def get_extrato(intencao, tipoGasto):
     if (response.status_code >= 200 and response.status_code <= 299):
         #retorno = response.json()
         extrato = response.json()
-        if (intencao == 'extrato_completo'):
-            retorno['intention'] = 'extrato_completo'
-            return retorno
-        elif (intencao == 'tipo_gasto'):
-            for transaction in extrato['data']['transaction']:
-                informacao = transaction['transactionInformation']
-                if (tipoGasto.lower() in informacao.lower()):
-                    retorno['intention'] = 'positivo'
-                else:
-                    retorno['intention'] = 'negativo'
+        for transaction in extrato['data']['transaction']:
+            informacao = transaction['transactionInformation']
+            if (informacao.lower() in script.lower()):
+                retorno['intention'] = informacao
+            else:
+                retorno['intention'] = 'notfound'
 
     else:
         retorno['intention'] = 'error'
 
     return retorno
+
+
+def send_transaction(request):
+    """
+        Esse endpoint recebe o numero de telefone consulta no banco de dados
+        busca os dados bancários no cadastro e faz a transferência.
+    """
+    if request.method == 'POST':
+        response = dict()
+        retorno_transaction = send_transaction_safra(request.data['celular'])
+        if (retorno_transaction['statuscode'] == 200):
+            response['status'] = 'Sucesso'
+        else:
+            response['status'] = 'Não foi possível realizar transferência'
+        serializer = SendTransactionSerializer(data=response)
+        if serializer.is_valid():
+            # serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def string2number(str):
+    """
+        realizar a conversão de uma string com números para uma lista de números
+    """
+    #numberlist = [int(s) for s in str.split() if s.isdigit()]
+    numberlist = re.findall(r'\d+', str)
+    numberAnterior = None
+    final_list = []
+    sequencial = 0
+    for number in numberlist:
+        sequencial = sequencial + 1
+        if (numberAnterior is None):
+            numberAnterior = number
+            #print(numberAnterior)
+        else:
+            number_decimal = numberAnterior + '.' + number
+            #print(number_decimal)
+            if (number_decimal in str):
+
+                final_list.append(number_decimal)
+                numberAnterior = None
+            else:
+                if (sequencial == len(numberlist)):
+                    final_list.append(numberAnterior)
+                    final_list.append(number)
+                else:
+                    final_list.append(numberAnterior)
+                    numberAnterior = number
+
+    return final_list

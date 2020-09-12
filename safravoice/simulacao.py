@@ -104,4 +104,37 @@ def get_extrato(intencao, tipoGasto):
     return retorno
 
 
-print(get_extrato('tipo_gasto', 'academia'))
+import re
+
+
+def string2number(str):
+    #numberlist = [int(s) for s in str.split() if s.isdigit()]
+    numberlist = re.findall(r'\d+', str)
+    numberAnterior = None
+    final_list = []
+    sequencial = 0
+    for number in numberlist:
+        sequencial = sequencial + 1
+        if (numberAnterior is None):
+            numberAnterior = number
+            #print(numberAnterior)
+        else:
+            number_decimal = numberAnterior + '.' + number
+            #print(number_decimal)
+            if (number_decimal in str):
+
+                final_list.append(number_decimal)
+                numberAnterior = None
+            else:
+                if (sequencial == len(numberlist)):
+                    final_list.append(numberAnterior)
+                    final_list.append(number)
+                else:
+                    final_list.append(numberAnterior)
+                    numberAnterior = number
+
+    return final_list
+
+
+numbers = string2number("h3110d 23 cat 444.4 rabbit 11 2 dog")
+print(numbers[0])

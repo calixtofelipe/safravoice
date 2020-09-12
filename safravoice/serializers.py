@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from safravoice.models import ReqBuilder, ExtratoModel
+from safravoice.models import ReqBuilder
 from safravoice.api_safra import send_transaction_safra
 
 
