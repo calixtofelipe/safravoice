@@ -15,7 +15,3 @@
 ### Dados de Acesso Admin
 user = safraadm
 senha: s@fra!Voice
-
-### Dados de Acesso UserAPI
-user = safraapi
-senha: s@fra!restVoice

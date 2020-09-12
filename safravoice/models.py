@@ -4,7 +4,7 @@ from django.db.models import Q
 
 # Create your models here.
 class ReqBuilder(models.Model):
-    client_id = models.CharField('client_id', max_length=100, blank=True)
+    client_id = models.CharField('client_id', max_length=30, blank=True)
     secret = models.TextField('secret', blank=True)
     url = models.TextField('url')
     description = models.TextField('description')
