@@ -21,9 +21,18 @@ def decodeAudio(encoded_audio, nome_arquivo):
     :param nome_arquivo:Nome do arquivo de audios
     :author: Ellen Giacometti
     """
-    wav_file = open(nome_arquivo, "wb")
-    decode_string = base64.b64decode(encoded_audio)
-    wav_file.write(decode_string)
+    #nome_arquivo = "teste.txt"
+    #print('decodeAudio>>>>>>>>', encoded_audio)
+    base64_bytes = encoded_audio.encode('utf-8')
+
+    message_bytes = base64.b64decode(base64_bytes)
+    print('decodeAudio>>>>>>>>', message_bytes)
+    message = message_bytes.decode('utf-8')
+
+    decode_string = base64.b64decode(message)
+    print('decodeAudio===============', message)
+    wav_file = open(nome_arquivo, "wb+")
+    wav_file.write(message)
 
 
 def gravaAudio(audio_filename, segundos):

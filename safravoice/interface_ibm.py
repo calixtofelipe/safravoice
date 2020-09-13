@@ -1,4 +1,4 @@
-from safravoice.watson.manipula_audio import encodeAudio
+from safravoice.manipula_audio import encodeAudio
 from os.path import join, dirname
 from safravoice.models import ReqBuilder
 from ibm_watson import SpeechToTextV1, TextToSpeechV1, AssistantV1
@@ -24,6 +24,32 @@ def voz2Texto(nome_audio):
             model='pt-BR_BroadbandModel',
             content_type='audio/wav',
             word_alternatives_threshold=0.9).get_result()
+    script = ""
+    while bool(watson_resultado.get('results')):
+        script = watson_resultado.get('results').pop().get(
+            'alternatives').pop().get('transcript') + script[:]
+    return script
+
+
+def voz2TextoBytes(byte_file):
+    print('voz2TextoBytes>>>>>>>>>>', byte_file)
+    """
+    Função que converte o audio do cliente para um arquivo de texto
+    :param nome_audio: Nome do arquivo de audios
+    :return: script - Variável de texto  contendo as falas do cliente.
+    :author: Ellen Giacometti
+    """
+    queryset = ReqBuilder.objects.filter(description='voz2Texto').get()
+    secret = queryset.secret
+    url = queryset.url
+    authenticator = IAMAuthenticator(secret)
+    voztexto_service = SpeechToTextV1(authenticator=authenticator)
+    voztexto_service.set_service_url(url)
+    watson_resultado = voztexto_service.recognize(
+        audio=byte_file,
+        model='pt-BR_BroadbandModel',
+        content_type='audio/wav',
+        word_alternatives_threshold=0.9).get_result()
     script = ""
     while bool(watson_resultado.get('results')):
         script = watson_resultado.get('results').pop().get(

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import base64
 import requests
 import io
 import json
@@ -9,8 +10,8 @@ from collections import namedtuple
 from safravoice.models import ReqBuilder, TransactionModel
 from safravoice.serializers import ReqBuilderSerializer, SendTransactionSerializer, IntentionSerializer
 from safravoice.api_safra import send_transaction_safra, get_extrato, string2number
-from safravoice.watson.interface_ibm import texto2Intencao, texto2Voz, voz2Texto
-from safravoice.watson.manipula_audio import decodeAudio
+from safravoice.interface_ibm import texto2Intencao, texto2Voz, voz2Texto, voz2TextoBytes
+from safravoice.manipula_audio import decodeAudio
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -33,8 +34,8 @@ def process_voice(request):
         try:
             response = dict()
             [intention, confianca,
-             script] = audio2intention(request.data['nome_arquivo'],
-                                       request.data['encoded_audio'])
+             script] = audio2intention(request.data['encoded_audio'],
+                                       request.data['nome_arquivo'])
 
             if (intention in ['Banking_Transfer_Money']):
                 # TRATATIVA PARA INTENTION DE TRANSFERENCIA - PEDINDO O TELEFONE
@@ -83,8 +84,18 @@ class ReqBuilderViewSet(viewsets.ModelViewSet):
     serializer_class = ReqBuilderSerializer
 
 
-def audio2intention(nome_arquivo, encoded_audio):
-    audiofile = decodeAudio(encoded_audio, nome_arquivo)
-    text_audio = voz2Texto(audiofile)
-    retorno = texto2Intencao(text_audio)
-    return retorno
+def audio2intention(encoded_audio, nome_arquivo):
+    #print(encoded_audio)
+    #string_to_byte = encoded_audio.encode("utf-8")
+    print(len(encoded_audio))
+    message_bytes = decode64_text_to_byte(encoded_audio)
+    print('audio2intention', message_bytes)
+    #text_audio = voz2TextoBytes(message_bytes)
+    #retorno = texto2Intencao(text_audio)
+    #return retorno
+
+
+def decode64_text_to_byte(text):
+    text2bytes = text.encode("utf-8")
+    bytes_real = base64.b64decode(text2bytes)
+    return bytes_real
