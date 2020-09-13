@@ -7,33 +7,42 @@ import os
 
 
 def voz2Texto(nome_audio):
+    print("entrou no voz to text")
     """
     Função que converte o audio do cliente para um arquivo de texto
     :param nome_audio: Nome do arquivo de audios
     :return: script - Variável de texto  contendo as falas do cliente.
     :author: Ellen Giacometti
     """
-    queryset = ReqBuilder.objects.filter(description='voz2Texto').get()
-    secret = queryset.secret
-    url = queryset.url
-    authenticator = IAMAuthenticator(secret)
-    voztexto_service = SpeechToTextV1(authenticator=authenticator)
-    voztexto_service.set_service_url(url)
-    with open(
-            join(os.path.dirname(os.path.abspath(__file__)), './.',
-                 'audio.wav'), 'rb') as audio_file:
-
-        watson_resultado = voztexto_service.recognize(
-            audio=audio_file,
-            model='pt-BR_BroadbandModel',
-            content_type='audio/wav',
-            word_alternatives_threshold=0.9).get_result()
-
     script = ""
-    print("31 - interface ibm")
-    while bool(watson_resultado.get('results')):
-        script = watson_resultado.get('results').pop().get(
-            'alternatives').pop().get('transcript') + script[:]
+    try:
+        queryset = ReqBuilder.objects.filter(description='voz2Texto').get()
+        secret = queryset.secret
+        url = queryset.url
+        authenticator = IAMAuthenticator(secret)
+        voztexto_service = SpeechToTextV1(authenticator=authenticator)
+        voztexto_service.set_service_url(url)
+        print(
+            'caminho audio',
+            join(os.path.dirname(os.path.abspath(__file__)), './.',
+                 nome_audio))
+        with open(
+                join(os.path.dirname(os.path.abspath(__file__)), './.',
+                     nome_audio), 'rb') as audio_file:
+
+            watson_resultado = voztexto_service.recognize(
+                audio=audio_file,
+                model='pt-BR_BroadbandModel',
+                content_type='audio/mpeg',
+                word_alternatives_threshold=0.9).get_result()
+
+        print("31 - interface ibm")
+        while bool(watson_resultado.get('results')):
+            script = watson_resultado.get('results').pop().get(
+                'alternatives').pop().get('transcript') + script[:]
+    except ApiException as ex:
+        print("Method failed with status code ", str(ex.code), ": ",
+              ex.message)
     return script
 
 
@@ -57,7 +66,7 @@ def voz2TextoBytes(byte_file):
         watson_resultado = voztexto_service.recognize(
             audio=byte_file,
             model='pt-BR_BroadbandModel',
-            content_type='audio/wav',
+            content_type='audio/mpeg',
             word_alternatives_threshold=0.9).get_result()
         script = ""
 
@@ -91,7 +100,7 @@ def texto2Voz(nome_arquivo, script):
         audio_file.write(
             textovoz_service.synthesize(
                 script, voice="pt-BR_IsabelaV3Voice",
-                accept='audio/wav').get_result().content)
+                accept='audio/mpeg').get_result().content)
 
 
 def texto2Intencao(script):

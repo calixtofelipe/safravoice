@@ -1,6 +1,8 @@
 import base64
 # import sounddevice as sd
 import wavio
+from os.path import join, dirname
+import os
 
 
 def encodeAudio(nome_arquivo):
@@ -24,5 +26,7 @@ def decodeAudio(encoded_audio, nome_arquivo):
 
     base64_bytes = encoded_audio.encode('utf-8')
     message_bytes = base64.b64decode(base64_bytes)
-    wav_file = open(nome_arquivo, "wb+")
+    wav_file = open(
+        join(os.path.dirname(os.path.abspath(__file__)), './.', nome_arquivo),
+        "wb+")
     wav_file.write(message_bytes)
