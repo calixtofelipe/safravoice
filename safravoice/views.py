@@ -95,15 +95,10 @@ class ReqBuilderViewSet(viewsets.ModelViewSet):
 
 def audio2intention(encoded_audio, nome_arquivo):
     print('entrou no audio2intention')
-    #message_bytes = decode64_text_to_byte(encoded_audio)
-    #text_audio = voz2TextoBytes(message_bytes)
-    #retorno = texto2Intencao(text_audio)
-    decodeAudio(encoded_audio, nome_arquivo)
-    text_audio = voz2Texto(nome_arquivo)
-    print("retorno texto do audio", text_audio)
-    #retorno = texto2Intencao(text_audio)
-    #print("intencao", retorno)
-    return text_audio  #retorno
+    message_bytes = decode64_text_to_byte(encoded_audio)
+    text_audio = voz2TextoBytes(message_bytes)
+    retorno = texto2Intencao(text_audio)
+    return retorno
 
 
 def decode64_text_to_byte(text):

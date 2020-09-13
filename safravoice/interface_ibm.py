@@ -66,7 +66,7 @@ def voz2TextoBytes(byte_file):
         watson_resultado = voztexto_service.recognize(
             audio=byte_file,
             model='pt-BR_BroadbandModel',
-            content_type='audio/mpeg',
+            content_type='application/octet-stream',
             word_alternatives_threshold=0.9).get_result()
         script = ""
 
