@@ -67,7 +67,7 @@ def process_voice(request):
                     response['intention'] = 'sucesso'
                     print('sucesso_extrato')
                 else:
-                    response['intention'] = 'servidor_indisponivel'
+                    response['intention'] = 'transf_servidor_indisponivel'
 
             elif (intention in ['QuestionarPagamento']):
                 # TRATATIVA PARA INTENTION DE QUESTIONAR PAGAMENTO

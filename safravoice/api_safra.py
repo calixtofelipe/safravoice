@@ -50,50 +50,56 @@ def send_transaction_safra(celular):
         Responsável por realizar transferência de um usuário para outra conta
     """
     print('begin', 'send_transaction_safra')
-    response_token = get_token()
-
     retorno = dict()
-    if (response_token['statuscode'] >= 200
-            and response_token['statuscode'] <= 299):
-        token = response_token['access_token']
-    else:
-        return retorno['statuscode'] == 405
-    print("recuperou_token_safra e iniciou transacao")
-    queryset = ReqBuilder.objects.filter(description='transfSafra').get()
-    url = queryset.url
+    try:
+        response_token = get_token()
 
-    payload = {
-        "Type": "TEF",
-        "TransactionInformation": "Mensalidade Academia",
-        "DestinyAccount": {
-            "Bank": "422",
-            "Agency": "0071",
-            "Id": "1234533",
-            "Cpf": "12345678933",
-            "Name": "Mark Zuckerberg da Silva",
-            "Goal": "Credit"
-        },
-        "Amount": {
-            "Amount": "250.00",
-            "Currency": "BRL"
+        if (response_token['statuscode'] >= 200
+                and response_token['statuscode'] <= 299):
+            token = response_token['access_token']
+        else:
+            return retorno['statuscode'] == 405
+        print("recuperou_token_safra e iniciou transacao")
+        queryset = ReqBuilder.objects.filter(description='transfSafra').get()
+        url = queryset.url
+
+        payload = {
+            "Type": "TEF",
+            "TransactionInformation": "Mensalidade Academia",
+            "DestinyAccount": {
+                "Bank": "422",
+                "Agency": "0071",
+                "Id": "1234533",
+                "Cpf": "12345678933",
+                "Name": "Mark Zuckerberg da Silva",
+                "Goal": "Credit"
+            },
+            "Amount": {
+                "Amount": "250.00",
+                "Currency": "BRL"
+            }
         }
-    }
-    json_object = json.dumps(payload)
-    auth = 'Bearer ' + token
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': auth,
-    }
+        json_object = json.dumps(payload)
+        auth = 'Bearer ' + token
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth,
+        }
 
-    response = requests.request("POST", url, headers=headers, data=json_object)
-    print('retorno request extrato', response.status_code)
-    retorno = dict()
-    if (response.status_code >= 200 and response.status_code <= 299):
-        retorno = response.json()
-        retorno['statuscode'] = 200
+        response = requests.request("POST",
+                                    url,
+                                    headers=headers,
+                                    data=json_object)
+        print('retorno request extrato', response.status_code)
+        retorno = dict()
+        if (response.status_code >= 200 and response.status_code <= 299):
+            retorno = response.json()
+            retorno['statuscode'] = 200
 
-    else:
-        retorno['statuscode'] = response.status_code
+        else:
+            retorno['statuscode'] = response.status_code
+    except Exception as e:
+        retorno['statuscode'] = 501
 
     return retorno
 
@@ -126,9 +132,9 @@ def get_extrato(script):
         for transaction in extrato['data']['transaction']:
             informacao = transaction['transactionInformation']
             if (informacao.lower() in script.lower()):
-                retorno['intention'] = informacao
+                retorno['intention'] = 'qp_pagto_realizado'
             else:
-                retorno['intention'] = 'sem_despesa'
+                retorno['intention'] = 'qp_sem_despesa'
 
     else:
         retorno['intention'] = 'error'

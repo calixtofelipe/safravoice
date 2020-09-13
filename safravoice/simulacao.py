@@ -259,10 +259,10 @@ def decode64_text_to_byte(text):
     return bytes_real
 
 
-nome_arquivo = "Intencao07.wav"
-bytes_file = open(nome_arquivo, "rb").read()
+#nome_arquivo = "Intencao07.wav"
+#bytes_file = open(nome_arquivo, "rb").read()
 #print(teste)
-print(os.path.dirname(os.path.abspath(__file__)) + '\\BemVindo01.wav')
+#print(os.path.dirname(os.path.abspath(__file__)) + '\\BemVindo01.wav')
 
 encoded_audio = base64.b64encode(open(nome_arquivo, "rb").read())
 request = encode64_byte_to_texto(bytes_file)
