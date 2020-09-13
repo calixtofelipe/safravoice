@@ -56,7 +56,7 @@ def send_transaction_safra(celular):
         token = response_token['access_token']
     else:
         return retorno['statuscode'] == 405
-
+    print("recuperou_token_safra", token)
     queryset = ReqBuilder.objects.filter(description='transfSafra').get()
     url = queryset.url
 
