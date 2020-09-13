@@ -38,6 +38,7 @@ def voz2Texto(nome_audio):
 
 
 def voz2TextoBytes(byte_file):
+    print('entrou voz2TextoBytes')
     """
     Função que converte o audio do cliente para um arquivo de texto
     :param nome_audio: Nome do arquivo de audios
@@ -66,7 +67,7 @@ def voz2TextoBytes(byte_file):
     except ApiException as ex:
         print("Method failed with status code ", str(ex.code), ": ",
               ex.message)
-
+    print('script', script)
     return script
 
 
@@ -102,6 +103,7 @@ def texto2Intencao(script):
             script - Variável de texto  contendo as falas do cliente.
     :author: Ellen Giacometti
     """
+    print('begin texto2Intencao')
     queryset = ReqBuilder.objects.filter(description='texto2Intencao').get()
     secret = queryset.secret
     url = queryset.url
@@ -118,7 +120,7 @@ def texto2Intencao(script):
         }).get_result()
     intencao = response['intents'][0]['intent']
     confianca = response['intents'][0]['confidence']
-    # print(response)
+    print('intencao', intencao)
     return intencao, confianca, script
 
 

@@ -188,7 +188,8 @@ def text2int(textnum, numwords={}):
     current = result = 0
     for word in textnum.split():
         if word not in numwords:
-            raise Exception("Illegal word: " + word)
+            break
+            #raise Exception("Illegal word: " + word)
 
         scale, increment = numwords[word]
         current = current * scale + increment
@@ -206,7 +207,6 @@ def text2int(textnum, numwords={}):
 #audiofile = decodeAudio(audio_bytes.decode("utf-8"),
 #                       "teste.txt")
 #bytes(audio_bytes.decode("utf-8"), 'utf-8')
-print(os.path.dirname(os.path.abspath(__file__)) + '\\BemVindo01.wav')
 """
 
 print(
@@ -220,8 +220,6 @@ audiofile = decodeAudio(audio_encode, "teste.wav")
 
 #message = "Python is fun"
 
-#print(byte_audio)
-#encoded_audio = base64.b64encode(open("BemVindo01.wav", "rb").read())
 #print(encoded_audio)
 #base64.b64decode(encoded_audio)
 #message_bytes = encoded_audio.decode("utf-8")
@@ -249,9 +247,9 @@ def encode64_byte_to_texto(bytes):
     return byte2text
 
 
-def write2file(text):
-    request = encode64_byte_to_texto(byte_audio)
-    wav_file = open("teste.txt", "wb+")
+def write2file(text, nome_file):
+    #request = encode64_byte_to_texto(byte_audio)
+    wav_file = open(nome_file, "wb+")
     wav_file.write(text)
 
 
@@ -261,8 +259,17 @@ def decode64_text_to_byte(text):
     return bytes_real
 
 
-#request = encode64_byte_to_texto(byte_audio)
+nome_arquivo = "Intencao07.wav"
+bytes_file = open(nome_arquivo, "rb").read()
+#print(teste)
+print(os.path.dirname(os.path.abspath(__file__)) + '\\BemVindo01.wav')
+
+encoded_audio = base64.b64encode(open(nome_arquivo, "rb").read())
+request = encode64_byte_to_texto(bytes_file)
+write2file(request.encode("utf-8"), 'Intencao07.txt')
 #print(request)
-#response = decode64_text_to_byte(request)
-#print(response)
-#write2file(request.encode("utf-8"))
+
+# response = decode64_text_to_byte(base64teste)
+# print(response)
+
+text2int("quero fazer uma transferência de cem reais pimentões ")

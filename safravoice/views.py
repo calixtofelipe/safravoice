@@ -10,7 +10,7 @@ import os
 from os.path import join, dirname
 from safravoice.models import ReqBuilder, TransactionModel
 from safravoice.serializers import ReqBuilderSerializer, SendTransactionSerializer, IntentionSerializer
-from safravoice.api_safra import send_transaction_safra, get_extrato, string2number
+from safravoice.api_safra import send_transaction_safra, get_extrato, string2number, text2int
 from safravoice.interface_ibm import texto2Intencao, texto2Voz, voz2Texto, voz2TextoBytes
 from safravoice.manipula_audio import decodeAudio
 
@@ -42,7 +42,9 @@ def process_voice(request):
 
             if (intention in ['Banking_Transfer_Money']):
                 # TRATATIVA PARA INTENTION DE TRANSFERENCIA - PEDINDO O TELEFONE
-                valor = string2number(script)
+
+                valor = 100  #text2int(script)
+                print('entrou no Banking_Transfer_Money', script, valor)
                 try:
                     queryset = TransactionModel.objects.get(id=1)
                     queryset.valor = valor
@@ -56,18 +58,22 @@ def process_voice(request):
 
             elif (intention in ['VocalizaTelefone']):
                 # TRATATIVA PARA INTENTION DE TRANSFERENCIA REALIZAR A TRANSFERENCIA
-                cellphone = string2number(script)
+                print('entrou na vocaliza telefone', script)
+                cellphone = 34994887452  #string2number(script)
+                print('entrou na vocaliza telefone', cellphone)
                 retorno_extrato = send_transaction_safra(cellphone)
-                if (retorno_extrato['status_code'] == '200'):
+                if (retorno_extrato['statuscode'] >= 200
+                        and retorno_extrato['statuscode'] <= 299):
                     response['intention'] = 'sucesso'
+                    print('sucesso_extrato')
                 else:
-                    response['intention'] = 'notpossible'
+                    response['intention'] = 'servidor_indisponivel'
 
             elif (intention in ['QuestionarPagamento']):
                 # TRATATIVA PARA INTENTION DE QUESTIONAR PAGAMENTO
+                print('entrou no questionar pagamento')
                 info_extrato = get_extrato(script)
-                response['intention'] = info_extrato
-
+                response['intention'] = info_extrato['intention']
             else:
                 response['intention'] = intention
         except Exception as e:

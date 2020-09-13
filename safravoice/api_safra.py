@@ -48,6 +48,7 @@ def send_transaction_safra(celular):
     """
         Responsável por realizar transferência de um usuário para outra conta
     """
+    print('begin', 'send_transaction_safra')
     response_token = get_token()
 
     retorno = dict()
@@ -83,6 +84,7 @@ def send_transaction_safra(celular):
     }
 
     response = requests.request("POST", url, headers=headers, data=json_object)
+    print('retorno request extrato', response.status_code)
     retorno = dict()
     if (response.status_code >= 200 and response.status_code <= 299):
         retorno = response.json()
@@ -124,11 +126,11 @@ def get_extrato(script):
             if (informacao.lower() in script.lower()):
                 retorno['intention'] = informacao
             else:
-                retorno['intention'] = 'notfound'
+                retorno['intention'] = 'sem_despesa'
 
     else:
         retorno['intention'] = 'error'
-
+    print('retorno_extrato', retorno)
     return retorno
 
 
@@ -181,3 +183,64 @@ def string2number(str):
                     numberAnterior = number
 
     return final_list
+
+
+def text2int(textnum, numwords={}):
+    if not numwords:
+        units = [
+            "zero",
+            "um",
+            "dois",
+            "três",
+            "quatro",
+            "cinco",
+            "seis",
+            "sete",
+            "oito",
+            "nove",
+            "dez",
+            "onze",
+            "doze",
+            "treze",
+            "quatorze",
+            "quinze",
+            "dezesseis",
+            "dezesete",
+            "dezoito",
+            "dezenove",
+        ]
+
+        tens = [
+            "", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta",
+            "setenta", "oitenta", "noventa"
+        ]
+
+        centenas = [
+            "", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos",
+            "seiscentos", "setecentos", "oitocentos", "novecentos"
+        ]
+
+        scales = ["mil", "milh", "bilh", "trilh"]
+
+        numwords["e"] = (1, 0)
+        for idx, word in enumerate(units):
+            numwords[word] = (1, idx)
+        for idx, word in enumerate(tens):
+            numwords[word] = (1, idx * 10)
+        for idx, word in enumerate(centenas):
+            numwords[word] = (1, idx * 100)
+        for idx, word in enumerate(scales):
+            numwords[word] = (10**(idx * 3 or 2), 0)
+
+    current = result = 0
+    for word in textnum.split():
+        if word not in numwords:
+            raise Exception("Illegal word: " + word)
+
+        scale, increment = numwords[word]
+        current = current * scale + increment
+        if scale > 100:
+            result += current
+            current = 0
+
+    return result + current

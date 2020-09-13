@@ -1,0 +1,1 @@
+web: gunicorn HackatonSafra.wsgi --log-file -
