@@ -19,6 +19,7 @@ def get_token():
     """
         Responsável por obter o token de autenticação na api do safra
     """
+    print("entrou no busca token safra")
     queryset = ReqBuilder.objects.filter(description='reqToken').get()
     client_id = queryset.client_id
     secret = queryset.secret
@@ -40,7 +41,7 @@ def get_token():
         retorno['statuscode'] = response.status_code
     else:
         retorno['statuscode'] = response.status_code
-
+    print("saiu  token safra", retorno['statuscode'])
     return retorno
 
 
@@ -56,7 +57,7 @@ def send_transaction_safra(celular):
         token = response_token['access_token']
     else:
         return retorno['statuscode'] == 405
-    print("recuperou_token_safra", token)
+    print("recuperou_token_safra", retorno['statuscode'])
     queryset = ReqBuilder.objects.filter(description='transfSafra').get()
     url = queryset.url
 
