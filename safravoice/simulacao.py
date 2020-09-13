@@ -3,7 +3,6 @@ import requests
 import json
 import re
 import os
-from manipula_audio import decodeAudio, encodeAudio
 
 
 def get_token():
@@ -207,8 +206,9 @@ def text2int(textnum, numwords={}):
 #audiofile = decodeAudio(audio_bytes.decode("utf-8"),
 #                       "teste.txt")
 #bytes(audio_bytes.decode("utf-8"), 'utf-8')
-"""
 print(os.path.dirname(os.path.abspath(__file__)) + '\\BemVindo01.wav')
+"""
+
 print(
     encodeAudio(
         os.path.dirname(os.path.abspath(__file__)) +
@@ -219,7 +219,6 @@ audiofile = decodeAudio(audio_encode, "teste.wav")
 """
 
 #message = "Python is fun"
-byte_audio = open("BemVindo01.wav", "rb").read()
 
 #print(byte_audio)
 #encoded_audio = base64.b64encode(open("BemVindo01.wav", "rb").read())
@@ -246,8 +245,14 @@ byte_audio = open("BemVindo01.wav", "rb").read()
 def encode64_byte_to_texto(bytes):
     encoded_audio = base64.b64encode(bytes)
     byte2text = encoded_audio.decode("utf-8")
-    print(byte2text)
+    print(len(byte2text))
     return byte2text
+
+
+def write2file(text):
+    request = encode64_byte_to_texto(byte_audio)
+    wav_file = open("teste.txt", "wb+")
+    wav_file.write(text)
 
 
 def decode64_text_to_byte(text):
@@ -256,6 +261,8 @@ def decode64_text_to_byte(text):
     return bytes_real
 
 
-request = encode64_byte_to_texto(byte_audio)
-response = decode64_text_to_byte(request)
-print(response)
+#request = encode64_byte_to_texto(byte_audio)
+#print(request)
+#response = decode64_text_to_byte(request)
+#print(response)
+#write2file(request.encode("utf-8"))

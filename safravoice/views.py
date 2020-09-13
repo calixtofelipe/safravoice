@@ -6,7 +6,8 @@ import json
 from requests.models import Response
 from django.http import JsonResponse
 from collections import namedtuple
-
+import os
+from os.path import join, dirname
 from safravoice.models import ReqBuilder, TransactionModel
 from safravoice.serializers import ReqBuilderSerializer, SendTransactionSerializer, IntentionSerializer
 from safravoice.api_safra import send_transaction_safra, get_extrato, string2number
@@ -30,9 +31,11 @@ def process_voice(request):
         Esse endpoint processa a voz do usuário o e nome do arquivo para retornar qual a intenção do usuário.
         Caso seja uma inteção de consulta de extrato já faz a consulta e retorna a resposta.
     """
+    print('entrou no processvoice')
     if request.method == 'POST':
         try:
             response = dict()
+            print("entrou no post")
             [intention, confianca,
              script] = audio2intention(request.data['encoded_audio'],
                                        request.data['nome_arquivo'])
@@ -85,14 +88,11 @@ class ReqBuilderViewSet(viewsets.ModelViewSet):
 
 
 def audio2intention(encoded_audio, nome_arquivo):
-    #print(encoded_audio)
-    #string_to_byte = encoded_audio.encode("utf-8")
-    print(len(encoded_audio))
+    print('entrou no audio2intention')
     message_bytes = decode64_text_to_byte(encoded_audio)
-    print('audio2intention', message_bytes)
-    #text_audio = voz2TextoBytes(message_bytes)
-    #retorno = texto2Intencao(text_audio)
-    #return retorno
+    text_audio = voz2TextoBytes(message_bytes)
+    retorno = texto2Intencao(text_audio)
+    return retorno
 
 
 def decode64_text_to_byte(text):
