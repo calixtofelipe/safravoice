@@ -1,1 +1,1 @@
-web: gunicorn HackatonSafra.wsgi --log-file -
+web: gunicorn safraapp.wsgi --log-file -
