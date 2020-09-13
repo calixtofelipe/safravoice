@@ -41,7 +41,7 @@ def get_token():
         retorno['statuscode'] = response.status_code
     else:
         retorno['statuscode'] = response.status_code
-    print("saiu  token safra", retorno['statuscode'])
+    print("saiu  token safra")
     return retorno
 
 
@@ -53,11 +53,12 @@ def send_transaction_safra(celular):
     response_token = get_token()
 
     retorno = dict()
-    if (response_token['statuscode'] == 200):
+    if (response_token['statuscode'] >= 200
+            and response_token['statuscode'] <= 299):
         token = response_token['access_token']
     else:
         return retorno['statuscode'] == 405
-    print("recuperou_token_safra", retorno['statuscode'])
+    print("recuperou_token_safra e iniciou transacao")
     queryset = ReqBuilder.objects.filter(description='transfSafra').get()
     url = queryset.url
 
