@@ -78,7 +78,7 @@ def process_voice(request):
                 response['intention'] = intention
         except Exception as e:
             response['intention'] = 'error'
-
+        print('resposta enviada:', response['intention'])
         serializer = IntentionSerializer(data=response)
         if serializer.is_valid():
             # serializer.save()

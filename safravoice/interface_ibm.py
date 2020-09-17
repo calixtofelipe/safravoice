@@ -33,7 +33,7 @@ def voz2Texto(nome_audio):
             watson_resultado = voztexto_service.recognize(
                 audio=audio_file,
                 model='pt-BR_BroadbandModel',
-                content_type='audio/mpeg',
+                content_type='application/octet-stream',
                 word_alternatives_threshold=0.9).get_result()
 
         print("31 - interface ibm")
@@ -99,8 +99,9 @@ def texto2Voz(nome_arquivo, script):
     with open(nome_arquivo, 'wb') as audio_file:
         audio_file.write(
             textovoz_service.synthesize(
-                script, voice="pt-BR_IsabelaV3Voice",
-                accept='audio/mpeg').get_result().content)
+                script,
+                voice="pt-BR_IsabelaV3Voice",
+                accept='application/octet-stream').get_result().content)
 
 
 def texto2Intencao(script):
